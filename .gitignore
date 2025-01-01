@@ -24,3 +24,6 @@ go.work.sum
 # templ
 *_templ.go
 *_templ.txt
+
+assets/styles.css
+tmp

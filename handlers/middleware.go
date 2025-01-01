@@ -38,9 +38,9 @@ func LogRequest(log *slog.Logger, inner http.Handler) http.Handler {
 		inner.ServeHTTP(lrw, r)
 		duration := time.Since(start)
 		log.InfoContext(r.Context(), "Completed request",
-			slog.Int64("durationInt", duration.Milliseconds()),
-			slog.String("duration", duration.String()),
 			slog.Int("status", lrw.statusCode),
+			slog.Int64("durationMs", duration.Milliseconds()),
+			slog.String("duration", duration.String()),
 		)
 	})
 }
