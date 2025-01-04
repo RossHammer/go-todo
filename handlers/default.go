@@ -19,6 +19,6 @@ func New(log *slog.Logger) *DefaultHandler {
 }
 
 func (h *DefaultHandler) index(w http.ResponseWriter, r *http.Request) error {
-	v := components.Hello("Test")
+	v := components.TodoPage("Test")
 	return v.Render(r.Context(), w)
 }

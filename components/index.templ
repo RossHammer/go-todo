@@ -1,13 +1,24 @@
 package components
 
-templ Hello(name string) {
-	<html>
-		<head>
-			<title>Greeting</title>
-			<link href="./assets/styles.css" rel="stylesheet">
-		</head>
-		<body class="bg-slate-800 text-slate-300">
-			<div>Hello, { name }!!!</div>
-		</body>
-	</html>
+templ TodoPage(name string) {
+	@page("TODO") {
+		<div class="min-h-screen bg-gray-50 dark:bg-gray-800">
+			<div class="flex flex-col justify-center py-4 sm:px-6 lg:px-8">
+				<div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
+					<h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">
+						TODO List
+					</h1>
+				</div>
+				<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+					<div class="bg-white dark:bg-gray-700 p-4 sm:rounded-lg sm:px-10 sm:shadow">
+						<ul class="text-gray-500 dark:text-white">
+							<li>Task 1</li>
+							<li>Task 2</li>
+							<li>Task 3</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }
