@@ -27,3 +27,4 @@ go.work.sum
 
 assets/styles.css
 tmp
+*.db

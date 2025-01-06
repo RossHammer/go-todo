@@ -27,5 +27,14 @@ live/sync_assets:
 	--build.include_dir "assets" \
 	--build.include_ext "js,css"
 
+live/sqlc:
+	go run github.com/cosmtrek/air@v1.51.0 \
+	--build.cmd "go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0 generate" \
+	--build.bin "true" \
+	--build.delay "100" \
+	--build.exclude_dir "" \
+	--build.include_dir "migrations,db" \
+	--build.include_ext "sql"
+
 live:
-	make -j4 live/templ live/server live/tailwind live/sync_assets
+	make -j5 live/templ live/server live/tailwind live/sync_assets live/sqlc

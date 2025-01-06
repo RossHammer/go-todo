@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/google/uuid"
 )
 
@@ -64,10 +65,26 @@ func (h *ContextHandler) Handle(ctx context.Context, r slog.Record) error {
 }
 
 func wrapError(log *slog.Logger, f func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
+	renderError := func(w http.ResponseWriter, r *http.Request, err error) {
+		log.ErrorContext(r.Context(), "Error handling request", slog.Any("error", err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
-			log.ErrorContext(r.Context(), "Error handling request", slog.Any("error", err))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			renderError(w, r, err)
 		}
 	}
+}
+
+func wrapPage(log *slog.Logger, f func(w http.ResponseWriter, r *http.Request) (templ.Component, error)) http.HandlerFunc {
+	return wrapError(log, func(w http.ResponseWriter, r *http.Request) error {
+		c, err := f(w, r)
+		if err != nil {
+			return err
+		}
+		if err := c.Render(r.Context(), w); err != nil {
+			return err
+		}
+		return nil
+	})
 }

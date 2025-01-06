@@ -1,6 +1,11 @@
 package components
 
-templ TodoPage(name string) {
+import (
+	"github.com/RossHammer/go-todo/db"
+	"github.com/go-playground/validator/v10"
+)
+
+templ TodoPage(todos []db.Todo) {
 	@page("TODO") {
 		<div class="min-h-screen bg-gray-50 dark:bg-gray-800">
 			<div class="flex flex-col justify-center py-4 sm:px-6 lg:px-8">
@@ -12,13 +17,30 @@ templ TodoPage(name string) {
 				<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
 					<div class="bg-white dark:bg-gray-700 p-4 sm:rounded-lg sm:px-10 sm:shadow">
 						<ul class="text-gray-500 dark:text-white">
-							<li>Task 1</li>
-							<li>Task 2</li>
-							<li>Task 3</li>
+							for _, item:= range todos {
+								@todoItem(item)
+							}
 						</ul>
+						<div class="pt-4">
+							@AddTodoForm(nil)
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	}
+}
+
+templ todoItem(todo db.Todo) {
+	<li>{ todo.Title }</li>
+}
+
+templ AddTodoForm(validation validator.ValidationErrors) {
+	<form action="/add" method="POST" class="flex border-2 border-slate-300 rounded">
+		<input type="text" name="Title" class="flex-grow  px-1 focus:outline-none"/>
+		<button type="submit" class="bg-slate-400 py-1 px-2">Add</button>
+		for _, e:= range validation {
+			<p>{ e.Translate(nil) }</p>
+		}
+	</form>
 }
