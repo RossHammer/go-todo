@@ -7,23 +7,21 @@ import (
 
 templ TodoPage(todos []db.Todo) {
 	@page("TODO") {
-		<div class="min-h-screen bg-gray-50 dark:bg-gray-800">
-			<div class="flex flex-col justify-center py-4 sm:px-6 lg:px-8">
+		<div class="min-h-screen bg-neutral">
+			<div class="flex flex-col gap-8 justify-center py-4 sm:px-6 lg:px-8">
 				<div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
-					<h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">
+					<h1 class="text-3xl font-extrabold">
 						TODO List
 					</h1>
 				</div>
-				<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-					<div class="bg-white dark:bg-gray-700 p-4 sm:rounded-lg sm:px-10 sm:shadow">
+				<div class="sm:mx-auto sm:w-full sm:max-w-md">
+					<div class="bg-base-100 p-4 sm:rounded-lg sm:px-10 sm:shadow flex flex-col gap-4">
 						<ul class="text-gray-500 dark:text-white">
 							for _, item:= range todos {
 								@todoItem(item)
 							}
 						</ul>
-						<div class="pt-4">
-							@AddTodoForm(nil)
-						</div>
+						@AddTodoForm(nil)
 					</div>
 				</div>
 			</div>
@@ -32,13 +30,18 @@ templ TodoPage(todos []db.Todo) {
 }
 
 templ todoItem(todo db.Todo) {
-	<li>{ todo.Title }</li>
+	<li>
+		<div class="flex py-0.5 gap-2 align-center">
+			<input type="checkbox" class="checkbox"/>
+			{ todo.Title }
+		</div>
+	</li>
 }
 
 templ AddTodoForm(validation validator.ValidationErrors) {
-	<form action="/add" method="POST" class="flex border-2 border-slate-300 rounded">
-		<input type="text" name="Title" class="flex-grow  px-1 focus:outline-none"/>
-		<button type="submit" class="bg-slate-400 py-1 px-2">Add</button>
+	<form action="/add" method="POST" class="join">
+		<input type="text" name="Title" class="input input-bordered join-item w-full" placeholder="new todo"/>
+		<button type="submit" class="btn btn-primary join-item">Add</button>
 		for _, e:= range validation {
 			<p>{ e.Translate(nil) }</p>
 		}
