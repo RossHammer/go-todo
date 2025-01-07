@@ -25,6 +25,15 @@ func (q *Queries) AddTodo(ctx context.Context, title string) (Todo, error) {
 	return i, err
 }
 
+const deleteTodo = `-- name: DeleteTodo :exec
+DELETE FROM todo WHERE id = ?
+`
+
+func (q *Queries) DeleteTodo(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTodo, id)
+	return err
+}
+
 const listTodos = `-- name: ListTodos :many
 SELECT id, title, completed, created_at FROM todo
 `
@@ -55,4 +64,25 @@ func (q *Queries) ListTodos(ctx context.Context) ([]Todo, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateTodo = `-- name: UpdateTodo :one
+UPDATE todo SET completed = ? WHERE id = ? RETURNING id, title, completed, created_at
+`
+
+type UpdateTodoParams struct {
+	Completed bool
+	ID        int64
+}
+
+func (q *Queries) UpdateTodo(ctx context.Context, arg UpdateTodoParams) (Todo, error) {
+	row := q.db.QueryRowContext(ctx, updateTodo, arg.Completed, arg.ID)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Completed,
+		&i.CreatedAt,
+	)
+	return i, err
 }

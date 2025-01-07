@@ -2,7 +2,7 @@ package components
 
 import (
 	"github.com/RossHammer/go-todo/db"
-	"github.com/go-playground/validator/v10"
+	"github.com/RossHammer/go-todo/util"
 )
 
 templ TodoPage(todos []db.Todo) {
@@ -10,18 +10,16 @@ templ TodoPage(todos []db.Todo) {
 		<div class="min-h-screen bg-neutral">
 			<div class="flex flex-col gap-8 justify-center py-4 sm:px-6 lg:px-8">
 				<div class="text-center sm:mx-auto sm:w-full sm:max-w-md">
-					<h1 class="text-3xl font-extrabold">
-						TODO List
-					</h1>
+					<h1 class="text-3xl font-extrabold">TODO List</h1>
 				</div>
 				<div class="sm:mx-auto sm:w-full sm:max-w-md">
 					<div class="bg-base-100 p-4 sm:rounded-lg sm:px-10 sm:shadow flex flex-col gap-4">
-						<ul class="text-gray-500 dark:text-white">
+						<ul id="todos">
 							for _, item:= range todos {
-								@todoItem(item)
+								@TodoItem(item)
 							}
 						</ul>
-						@AddTodoForm(nil)
+						@addTodoForm(nil)
 					</div>
 				</div>
 			</div>
@@ -29,21 +27,22 @@ templ TodoPage(todos []db.Todo) {
 	}
 }
 
-templ todoItem(todo db.Todo) {
-	<li>
-		<div class="flex py-0.5 gap-2 align-center">
-			<input type="checkbox" class="checkbox"/>
-			{ todo.Title }
+templ TodoItem(todo db.Todo) {
+	<li hx-target="closest li" hx-swap="outerHTML">
+		<div class="flex flex-row items-center py-0.5 gap-2">
+			<input hx-post={ buildUrl("/update/%d?Completed=%v", todo.ID, !todo.Completed) } type="checkbox" title="Completed" class="checkbox" checked?={ todo.Completed }/>
+			<span class={ templ.KV("line-through", todo.Completed) }>{ todo.Title }</span>
+			<button hx-delete={ buildUrl("/delete/%d", todo.ID) } hx-swap="delete" class="btn btn-error btn-square btn-xs">[X]</button>
 		</div>
 	</li>
 }
 
-templ AddTodoForm(validation validator.ValidationErrors) {
-	<form action="/add" method="POST" class="join">
-		<input type="text" name="Title" class="input input-bordered join-item w-full" placeholder="new todo"/>
+templ addTodoForm(validation []util.FieldError) {
+	<form hx-post={ buildUrl("/add") } hx-target="#todos" hx-swap="beforeend" hx-on::after-request="this.reset()" class="join">
+		<input type="text" name="Title" class="input input-bordered join-item w-full" placeholder="new todo" required/>
 		<button type="submit" class="btn btn-primary join-item">Add</button>
 		for _, e:= range validation {
-			<p>{ e.Translate(nil) }</p>
+			<p>{ e.Message }</p>
 		}
 	</form>
 }

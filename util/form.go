@@ -45,7 +45,7 @@ func (f *FormReader) ReadForm(v interface{}, r *http.Request) ([]FieldError, err
 		return nil, fmt.Errorf("error parsing form: %w", err)
 	}
 
-	if err := f.decoder.Decode(v, r.PostForm); err != nil {
+	if err := f.decoder.Decode(v, r.Form); err != nil {
 		return nil, fmt.Errorf("error decoding form: %w", err)
 	}
 

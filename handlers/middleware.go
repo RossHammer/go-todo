@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -81,7 +82,10 @@ func wrapPage(log *slog.Logger, f func(w http.ResponseWriter, r *http.Request) (
 		c, err := f(w, r)
 		if err != nil {
 			return err
+		} else if c == nil {
+			return fmt.Errorf("component is nil")
 		}
+
 		if err := c.Render(r.Context(), w); err != nil {
 			return err
 		}
